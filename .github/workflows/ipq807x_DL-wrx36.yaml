@@ -1,7 +1,7 @@
 name: ipq807x_dl-wrx36 Build remote repo only if new commits were pushed
 on:
   workflow_dispatch:
-  push:
+  #push:
   schedule:
     #- cron: '0 10 * * 1'
      - cron: '0 7 * * *'
