@@ -1,15 +1,56 @@
-name: cleanup
-
+name: Delete old workflow runs
 on:
-  push:
-
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
+env:
+  FORCE_COLOR: 1
 jobs:
-  cleanup-actions:
-    name: actions
-    runs-on: ubuntu-latest
-    if: "!startsWith(github.ref, 'refs/tags/') && github.ref != 'refs/heads/master'"
+  retain-workflows:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
     steps:
-    -
-      uses: rokroskar/workflow-run-cleanup-action@v0.3.3
-      env:
-        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      - name: Delete the Delete workflows
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          delete_workflow_pattern: Delete old workflow runs
+          retain_days: 1
+          keep_minimum_runs: 0
+      - name: Delete schedule workflow runs
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          delete_run_by_conclusion_pattern: success
+          retain_days: 15
+          keep_minimum_runs: 6
+      - name: Delete Skipped workflow runs
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          delete_run_by_conclusion_pattern: skipped
+          retain_days: 0
+          keep_minimum_runs: 0  
+      - name: Delete cancelled workflow runs
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          delete_run_by_conclusion_pattern: cancelled
+          retain_days: 0
+          keep_minimum_runs: 0
+      - name: Delete failure workflow runs
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          delete_run_by_conclusion_pattern: failure
+          retain_days: 0
+          keep_minimum_runs: 0
