@@ -1,4 +1,4 @@
-name: "Build ipq807x_new"
+name: "Build ipq807x_DL-wrx36_new"
 on:
   workflow_dispatch:
   #push:
@@ -103,13 +103,13 @@ jobs:
                 make V=s
 
             - name: TAR output
-              run: tar -cvf ipq807xx-images_org.tar bin/targets/ipq807x/generic
+              run: tar -cvf ipq807xx-images_DL-wrx36_org.tar bin/targets/ipq807x/generic
 
             - name: Upload artifacts
               uses: actions/upload-artifact@v2
               with:
-                name: ipq807x-images_org
-                path: ipq807xx-images_org.tar
+                name: ipq807x-images_DL-wrx36_org
+                path: ipq807xx-images_DL-wrx36_org.tar
 
   release:
           name: Make a release
@@ -120,10 +120,10 @@ jobs:
             - name: Download the image artifacts
               uses: actions/download-artifact@v2
               with:
-                name: ipq807x-images_org
+                name: ipq807x-images_DL-wrx36_org
 
             - name: Extract the image artifacts
-              run: tar xf ipq807xx-images_org.tar
+              run: tar xf ipq807xx-images_DL-wrx36_org.tar
               
             - name: Extract version information from version.buildinfo
               run: >-
@@ -138,7 +138,7 @@ jobs:
               with:
                 repo_token: "${{ secrets.GITHUB_TOKEN }}"
                 prerelease: true
-                title: "ipq807x_org - ${{ env.NOW }}-(${{ env.BUILDINFO }})"
-                automatic_release_tag: "ipq807x_org-${{ env.NOW }}@${{ env.BUILDINFO }}"
+                title: "ipq807x_DL-wrx36_org - ${{ env.NOW }}-(${{ env.BUILDINFO }})"
+                automatic_release_tag: "ipq807x_DL-wrx36_org-${{ env.NOW }}@${{ env.BUILDINFO }}"
                 auto_generate_release_notes: true
                 files: bin/targets/ipq807x/generic/*
