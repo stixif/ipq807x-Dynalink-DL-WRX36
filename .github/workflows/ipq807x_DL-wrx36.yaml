@@ -4,7 +4,7 @@ on:
   #push:
   schedule:
     #- cron: '0 10 * * 1'
-     - cron: '0 7 * * *'
+     - cron: '0 5 * * *'
 jobs:
   check:
     name: Check remote repo for new commits
@@ -24,11 +24,13 @@ jobs:
           hours=$(( ( $(date --utc +%s) - $timestamp ) / 3600 ))
           echo "Last commit date: $date"
           echo "Hours since last commit: $hours"
+          echo "Event Name: $eventname"
           echo "::set-output name=commit_age::$hours"
-      - uses: actions/checkout@v1
       - name: Try to fail
-        if: ${{ needs.check.outputs.commit_age > 24 && github.event_name != 'workflow_dispatch' }}
-        run: exit 1
+        if: ${{ needs.check.outputs.commit_age <= 24 && github.event_name == 'schedule' }}
+        run: |
+          echo "vorzeitiger exit"
+          exit 1
     outputs:
       commit_age: ${{ steps.calc.outputs.commit_age }}
       
