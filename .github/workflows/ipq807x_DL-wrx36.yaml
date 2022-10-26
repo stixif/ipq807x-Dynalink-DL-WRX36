@@ -22,12 +22,13 @@ jobs:
           date="$(jq -r '.commit.committer.date' commit.json)"
           timestamp=$(date --utc -d "$date" +%s)
           hours=$(( ( $(date --utc +%s) - $timestamp ) / 3600 ))
+          eventname=${{ github.event_name }}											
           echo "Last commit date: $date"
           echo "Hours since last commit: $hours"
           echo "Event Name: $eventname"
           echo "::set-output name=commit_age::$hours"
       - name: Try to fail
-        if: ${{ needs.check.outputs.commit_age <= 24 && github.event_name == 'schedule' }}
+        if: ${{ needs.check.outputs.commit_age > 24 && github.event_name == 'schedule' }}
         run: |
           echo "vorzeitiger exit"
           exit 1
