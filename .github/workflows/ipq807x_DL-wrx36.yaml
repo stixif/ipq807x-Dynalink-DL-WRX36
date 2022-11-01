@@ -28,7 +28,8 @@ jobs:
           echo "Event Name: $eventname"
           echo "::set-output name=commit_age::$hours"
       - name: Try to fail
-        if: ${{ needs.check.outputs.commit_age > 24 && github.event_name == 'schedule' }}
+        #if: ${{ needs.check.outputs.commit_age > 24 && github.event_name == 'schedule' }}
+        if: false == ${{ needs.check.outputs.commit_age <= 24 || github.event_name == 'workflow_dispatch' }}
         run: |
           echo "vorzeitiger exit"
           exit 1
