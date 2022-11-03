@@ -6,7 +6,7 @@ on:
     #- cron: '0 10 * * 1'
      - cron: '0 5 * * *'
 jobs:
-  check:
+  check1:
     name: Check remote repo for new commits
     runs-on: ubuntu-latest
     steps:
@@ -22,29 +22,51 @@ jobs:
           date="$(jq -r '.commit.committer.date' commit.json)"
           timestamp=$(date --utc -d "$date" +%s)
           hours=$(( ( $(date --utc +%s) - $timestamp ) / 3600 ))
-          eventname=${{ github.event_name }}											
+          eventname=${{ github.event_name }}
           echo "Last commit date: $date"
           echo "Hours since last commit: $hours"
           echo "Event Name: $eventname"
-          echo "::set-output name=commit_age::$hours"
-      - name: Try to fail
-        #if: ${{ needs.check.outputs.commit_age > 24 && github.event_name == 'schedule' }}
-        if: false == ${{ needs.check.outputs.commit_age <= 24 || github.event_name == 'workflow_dispatch' }}
-        run: |
-          echo "vorzeitiger exit"
-          exit 1
+          echo "commit_age=$hours" >> $GITHUB_OUTPUT
+
     outputs:
       commit_age: ${{ steps.calc.outputs.commit_age }}
-      
+
+  check2:
+    name: Fail?
+    needs: check1
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Try to fail?
+      if:  ${{ (needs.check1.outputs.commit_age > 24) && (github.event_name == 'schedule') }}
+      #if: false == ${{ (needs.check1.outputs.commit_age > 24) && (github.event_name == 'schedule') }}
+      env:
+        COMMIT_AGE: ${{ needs.check1.outputs.commit_age }}
+      run: |
+        eventname=${{ github.event_name }}
+        echo "cancle run"
+        echo "Event Name: $eventname"
+        echo "maximal 24H"
+        echo "Hours since last commit: $COMMIT_AGE"
+        exit 1
+        
+    - name: all OK!!
+      env:
+        COMMIT_AGE: ${{ needs.check1.outputs.commit_age }}
+      run: |
+        eventname=${{ github.event_name }}
+        echo "all OK"
+        echo "Event Name: $eventname"
+        echo "Hours since last commit: $COMMIT_AGE"
   build:
         name: Prepare and build IPQ807x generic images
-        needs: check
+        needs: check2
         runs-on: ubuntu-latest
-        if: ${{ needs.check.outputs.commit_age <= 24 || github.event_name == 'workflow_dispatch' }}
+        if: ${{ needs.check1.outputs.commit_age <= 24 || github.event_name == 'workflow_dispatch' }}
         steps:
             - name: Show inputs received from previous job
               env:
-                COMMIT_AGE: ${{ needs.check.outputs.commit_age }}
+                COMMIT_AGE: ${{ needs.check1.outputs.commit_age }}
               run: |
                 echo "Build triggered with commits last pushed $COMMIT_AGE hours ago"
             - name: Checkout
