@@ -94,7 +94,6 @@ jobs:
                 echo "CONFIG_PACKAGE_wpad-basic-wolfssl=m\n" >> .config
                 echo "CONFIG_PACKAGE_wpad-wolfssl=y\n" >> .config
                 echo "CONFIG_PACKAGE_libwolfssl=n\n" >> .config
-                echo "CONFIG_PACKAGE_libwolfssl-cpu-crypto=y\n" >> .config
                 
                 
                 # luci
@@ -103,6 +102,14 @@ jobs:
                 # Sonstiges
                 echo "CONFIG_PACKAGE_luci-ssl=y" >> .config
                 #echo "CONFIG_PACKAGE_luci-app-statistics=y" >> .config
+                
+                # services and tools
+                echo "CONFIG_PACKAGE_curl=y" >> .config
+                echo "CONFIG_PACKAGE_wget=y" >> .config
+                echo "CONFIG_PACKAGE_arp-scan=y" >> .config
+                echo "CONFIG_PACKAGE_bind-host=y" >> .config
+                echo "CONFIG_PACKAGE_irqbalance=y" >> .config
+                
           
                 # wlan test
                 #echo "CONFIG_PACKAGE_dawn=y\n" >> .config
