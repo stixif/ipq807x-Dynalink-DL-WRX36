@@ -101,7 +101,7 @@ jobs:
                 
                 # Sonstiges
                 echo "CONFIG_PACKAGE_luci-ssl=y" >> .config
-                #echo "CONFIG_PACKAGE_luci-app-statistics=y" >> .config
+                echo "CONFIG_PACKAGE_luci-app-statistics=y" >> .config
                 
                 # services and tools
                 echo "CONFIG_PACKAGE_curl=y" >> .config
