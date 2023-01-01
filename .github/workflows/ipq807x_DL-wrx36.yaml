@@ -115,7 +115,12 @@ jobs:
                 #echo "CONFIG_PACKAGE_dawn=y\n" >> .config
                 #echo "CONFIG_PACKAGE_luci-app-dawn=y\n" >> .config
           
-                
+                #test
+                echo "CONFIG_DEFAULT_kmod-usb-dwc3-qcom=y" >> .config
+                echo "CONFIG_DEFAULT_kmod-usb-ledtrig-usbport=y" >> .config
+                echo "CONFIG_DEFAULT_kmod-usb-ohci=y" >> .config
+                echo "CONFIG_DEFAULT_kmod-usb2=y" >> .config
+                echo "CONFIG_DEFAULT_kmod-usb3=y" >> .config
                 
                 
 
